@@ -1,4 +1,26 @@
+# save this as .gitignore in the glassbox-agent folder (note the leading dot)
+
+# secrets — the important line
 .env
-.venv/
+.env.*
+!.env.example
+*.key
+
+# python
 __pycache__/
-*.pyc
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+
+# runs and scratch
+runs/
+*.log
+.ipynb_checkpoints/
+
+# os / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
