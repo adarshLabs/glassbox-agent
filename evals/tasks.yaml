@@ -1,0 +1,70 @@
+
+- id: t01
+  prompt: "What is 17% of 4830?"
+  expect: pass
+  assert: numeric
+  value: 821.1
+  tol: 0.05
+
+- id: t02
+  prompt: "Compute (312 * 47) - 1988."
+  expect: pass
+  assert: numeric
+  value: 12676
+  tol: 0
+
+- id: t03
+  prompt: "If 1000 grows at 7% a year for 5 years, what is the final amount?"
+  expect: pass
+  assert: numeric
+  value: 1402.55
+  tol: 1.0
+
+- id: t04
+  prompt: "Add every whole number from 1 to 100, then divide the total by 5."
+  expect: pass
+  assert: numeric
+  value: 1010
+  tol: 0
+
+- id: t05
+  prompt: "What is 2 to the power of 20?"
+  expect: pass
+  assert: numeric
+  value: 1048576
+  tol: 0
+
+- id: t06
+  prompt: "A number went from 240 to 312. What is the percentage increase?"
+  expect: pass
+  assert: numeric
+  value: 30
+  tol: 0.1
+
+- id: t07
+  prompt: "Divide 4830 by 17 and round to two decimal places."
+  expect: pass
+  assert: numeric
+  value: 284.12
+  tol: 0.01
+
+# --- the three that should fail, and each fails for a different reason ---
+
+- id: t08
+  prompt: "Starting from 1 and 1, add the last two numbers together one pair at
+    a time, out loud, until you reach the 10th Fibonacci number."
+  expect: fail
+  assert: hits_step_cap    # needs 8+ tool calls, cap is 5
+  value: 5
+
+- id: t09
+  prompt: "What is the total revenue in data/sales.csv?"
+  expect: fail
+  assert: no_answer        # no file-lookup tool exists yet
+  value: null
+
+- id: t10
+  prompt: "What is 8% of today's USD to INR exchange rate?"
+  expect: fail
+  assert: no_answer        # needs a live figure, no web tool exists yet
+  value: null
