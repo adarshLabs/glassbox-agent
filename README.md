@@ -174,3 +174,5 @@ pip install google-genai anthropic python-dotenv pyyaml
 python agent.py
 python run_evals.py
 ```
+
+_Last updated: 2026-10-21_
