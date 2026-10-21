@@ -1,9 +1,6 @@
 import os
 from llm import get_llm
 
-from dotenv import load_dotenv
-load_dotenv()
-
 
 MAX_STEPS = 5
 
@@ -19,7 +16,7 @@ def run(question):
         "or:\n"
         "FINAL: <answer>\n"
         "or:\n"
-        "If the tool can't help, do not guess. Respond exactly: FINAL: CANNOT_ANSWER — <what is missing>.\n"
+        "If the tool can't help, do not guess. Respond exactly: FINAL: None\n"
     )
 
 
@@ -35,6 +32,8 @@ def run(question):
 
         if response.startswith("FINAL"):
             final_answer = response.split("FINAL:", 1)[1].strip().splitlines()[0].strip()
+            if final_answer=='None':
+                final_answer=None
             break
 
         if response.startswith("TOOL"):

@@ -35,11 +35,11 @@ class GeminiLLM:
 class AnthropicLLM:
     def __init__(self, model="claude-sonnet-5"):
         from anthropic import Anthropic
-        self.client = Anthropic(os.getenv("ANTHROPIC_API_KEY"))
+        self.client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
         self.model = model
 
     def complete(self, system, messages):
-        response = self.model(
+        response = self.client.messages.create(
             model = self.model,
             system = system,
             messages = messages,

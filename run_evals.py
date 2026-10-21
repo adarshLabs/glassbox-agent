@@ -11,6 +11,7 @@ for t in tasks:
         answer, steps = run(t["prompt"])
     except Exception as e:
         answer, steps = None, 0
+        print(f"  !! {t['id']} raised {type(e).__name__}: {e}")
     secs = round(time.time() - t0, 1)
 
     kind = t["assert"]
@@ -26,7 +27,7 @@ for t in tasks:
     elif kind == "no_answer":
         ok = (answer is None)
 
-    matched = (ok == (t["expect"] == "pass"))
+    matched = ok
     passed += matched
     rows.append((t["id"], t["expect"], "OK" if ok else "no", steps, secs, matched, repr(answer)[:40]))
 
