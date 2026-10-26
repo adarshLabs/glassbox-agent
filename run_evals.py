@@ -7,10 +7,11 @@ rows, passed = [], 0
 
 for t in tasks:
     t0 = time.time()
+    errored = False
     try:
         answer, steps = run(t["prompt"])
     except Exception as e:
-        answer, steps = None, 0
+        answer, steps, errored = None, 0, True
         print(f"  !! {t['id']} raised {type(e).__name__}: {e}")
     secs = round(time.time() - t0, 1)
 
@@ -26,6 +27,8 @@ for t in tasks:
         ok = (answer is None and steps >= int(t["value"]))
     elif kind == "no_answer":
         ok = (answer is None)
+    if errored:  # a crash must not count as a correct "no answer"
+        ok = False
 
     matched = ok
     passed += matched

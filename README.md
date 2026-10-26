@@ -141,6 +141,54 @@ doubled between runs with no code change (t05 8.9s → 21.2s, t08 22.6s → 38.0
 on the same free-tier model, and every number here is a single run. GAIA runs
 each model three times and averages; this does not.
 
+### Run 3 — 26 Oct 2026 · Defect 2 fixed
+
+`calculator()` now wraps `eval()` in `try/except` and returns
+`f"Error: {type(e).__name__}: {e}"` as a tool observation instead of letting the
+exception escape `run()`. `t11` added to exercise it: *"What is 7 divided by 0,
+plus 3? If it cannot be computed, say so."*
+
+```
+id   expect  result  steps  secs   match  answer
+t01  pass    OK      1      35.0   Y      '821.1'
+t02  pass    OK      1      49.4   Y      '12676'
+t03  pass    OK      1      7.3    Y      '1402.55'
+t04  pass    OK      1      20.0   Y      '1010.0'
+t05  pass    OK      1      12.6   Y      '1048576'
+t06  pass    OK      1      10.8   Y      '30.0%'
+t07  pass    OK      1      6.0    Y      '284.12'
+t08  fail    OK      5      142.8  Y      None
+t09  fail    OK      0      11.4   Y      None
+t10  fail    OK      0      8.9    Y      None
+t11  fail    OK      1      9.6    Y      None
+```
+
+**11/11 agreement. Defect 2 is fixed: the run completes.** Before this change an
+expression like `7/0` raised out of `run()` and the outer `try/except` in
+`run_evals.py` recorded a bare `None` — the same value a clean refusal produces.
+t11 now takes one step: the model calls the tool, receives
+`Error: ZeroDivisionError: division by zero` as an observation, and returns
+`FINAL: None`.
+
+**What this run does not prove, stated because the distinction is the whole point
+of the task.** Defect 4 is still open — a crash and a refusal both arrive at the
+scorer as `None`, so `t11` passing on `no_answer` does not by itself demonstrate
+that the error path was taken rather than the crash path. The supporting evidence
+is circumstantial and worth naming as such: `steps = 1` and the suite finishing
+are consistent with a recovered observation and inconsistent with an escaped
+exception. **A real assertion would check the observation text, not the final
+answer.**
+
+**And one disclosure about how t11 was written:** its `expect: fail` /
+`assert: no_answer` were copied from t10 rather than chosen. They are correct —
+7 ÷ 0 genuinely cannot be computed, so "no answer" is the right prediction — but
+the choice was inherited, not reasoned, and a task whose grading was not
+deliberately set is a weaker instrument than one whose grading was.
+
+**Also unaddressed:** the model satisfied *"say so"* only in the sentinel form
+`FINAL: None`. It did not state that the computation was impossible. That is
+Defect 3's territory and it is still open.
+
 ## Scoring decisions, disclosed
 
 - **t06 sometimes returns `30%` or `30.0%`, not `30`.** The arithmetic is right; the `%`
@@ -154,9 +202,10 @@ each model three times and averages; this does not.
 
 - One tool (calculator). No file access, no web access — t09 and t10 exist to
   keep that visible rather than hidden.
-- `calculator()` evaluates with `eval()`, not a sandboxed parser, and has no
-  error handling — a malformed expression raises instead of returning a
-  recoverable observation the model could react to.
+- `calculator()` evaluates with `eval()`, not a sandboxed parser. ~~No error
+  handling~~ — **fixed 26 Oct 2026 (Run 3): exceptions are caught and returned as
+  `Error: <Type>: <message>` observations.** The `eval()` sandboxing concern
+  stands.
 - Refusal is only requested in the prompt; nothing in the code stops the model
   answering something it should decline. Only the exact reply `FINAL: None` is
   mapped to "no answer". A variation such as `FINAL: none` or a reason after
@@ -175,4 +224,4 @@ python agent.py
 python run_evals.py
 ```
 
-_Last updated: 2026-10-21_
+_Last updated: 2026-10-26_

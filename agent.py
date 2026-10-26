@@ -5,7 +5,10 @@ from llm import get_llm
 MAX_STEPS = 5
 
 def calculator(expr):
-    return eval(expr.replace("^", "**"))
+    try:
+        return str(eval(expr.replace("^", "**")))
+    except Exception as e:
+        return f"Error: {type(e).__name__}: {e}"
 
 def run(question):
     SYSTEM = (

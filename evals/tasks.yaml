@@ -68,3 +68,9 @@
   expect: fail
   assert: no_answer        # needs a live figure, no web tool exists yet
   value: null
+
+- id: t11
+  prompt: "What is 7 divided by 0, plus 3? If it cannot be computed, say so."
+  expect: fail
+  assert: no_answer        # division by zero, tool returns an error
+  value: null
